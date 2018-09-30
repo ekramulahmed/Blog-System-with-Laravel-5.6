@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Support\Facades\Auth;
+
+class RedirectIfAuthenticated
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string|null  $guard
+     * @return mixed
+     */
+    public function handle($request, Closure $next, $guard = null)
+    {
+        // if admin authenticated
+        if (Auth::guard($guard)->check() && Auth::user()->role->id == 1) {
+          return redirect()->route('admin.dashboard');
+        }
+        // if author authenticated
+        elseif (Auth::guard($guard)->check() && Auth::user()->role->id == 2){
+          return redirect()->route('author.dashboard');
+        }
+        // if not authenticated
+        else {
+          return $next($request);
+        }
+
+    }
+}
